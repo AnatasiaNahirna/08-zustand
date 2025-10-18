@@ -7,18 +7,12 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${
   process.env.NEXT_PUBLIC_NOTEHUB_TOKEN
 }`;
 
-// interface FetchNotesParams {
-//     page?: number;
-//     search?: string;
-//     tag?: string | undefined,
-// }
-
 interface FetchNotesResponse {
     notes: Note[],
     totalPages: number,
 }
 
-interface createNoteProps {
+export interface createNoteProps {
     title: string,
     content: string,
     tag: NoteTag,

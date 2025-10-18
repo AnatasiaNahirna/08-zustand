@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { Note, NoteTag } from "../../types/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNote } from "../../lib/api";
+import { useNoteDraft } from "@/lib/store/noteStore";
 
 const validationSchema = Yup.object({
     title: Yup.string()
@@ -27,26 +28,33 @@ interface NewNotePayload {
     tag: NoteTag;
 }
 
-const initialValues: NewNotePayload = {
-    title: "",
-    content: "",
-    tag: "Todo",
-};
-
 export default function NoteForm() {
     const router = useRouter();
     const onCancel = () => router.back()
     const queryClient = useQueryClient();
+    const { draft, setDraft, clearDraft } = useNoteDraft();
 
     const createMutation = useMutation({
         mutationFn: createNote,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["notes"] });
             onCancel();
+            clearDraft()
         },
     });
 
-    const onChange = async (formData: FormData) => {
+      const handleChange = (
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setDraft({
+      ...draft,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+    const onCreate = async (formData: FormData) => {
         const noteData: NewNotePayload = {
             title: formData.get('title') as string,
             content: formData.get('content') as string,
@@ -69,14 +77,16 @@ export default function NoteForm() {
     }
 
     return (
-                <form className={css.form} action={onChange}>
+                <form className={css.form} action={onCreate}>
                     <div className={css.formGroup}>
                         <label htmlFor="title">Title</label>
                         <input
                             id="title"
                             type="text"
                             name="title"
-                            className={css.input}
+                    className={css.input}
+                    onChange={handleChange}
+                    defaultValue={draft?.title}
                         />
                     </div>
 
@@ -86,7 +96,9 @@ export default function NoteForm() {
                             id="content"
                             name="content"
                             rows={8}
-                            className={css.textarea}
+                    className={css.textarea}
+                    onChange={handleChange}
+                    defaultValue={draft?.content}
                         />
                     </div>
 
@@ -95,7 +107,9 @@ export default function NoteForm() {
                         <select
                             id="tag"
                             name="tag"
-                            className={css.select}
+                    className={css.select}
+                    onChange={handleChange}
+                    defaultValue={draft?.tag}
                         >
                             <option value="Todo">Todo</option>
                             <option value="Work">Work</option>
