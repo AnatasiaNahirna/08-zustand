@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query"; 
 import { useDebounce } from "use-debounce";
 import { fetchNotes } from "@/lib/api";
+import { useEffect } from "react";
 import Link from "next/link";
 
 import NoteList from "@/components/NoteList/NoteList";
@@ -32,6 +33,11 @@ export default function NotesClient({tag}: NotesClientProps) {
     const handlePageClick = (event: { selected: number }): void => {
         setPage(event.selected + 1);
     };
+
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedQuery]);
+
 
     return (
         <div className={css.app}>

@@ -38,8 +38,8 @@ export default function NoteForm() {
         mutationFn: createNote,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["notes"] });
+            clearDraft();
             onCancel();
-            clearDraft()
         },
     });
 
@@ -109,7 +109,8 @@ export default function NoteForm() {
                             name="tag"
                     className={css.select}
                     onChange={handleChange}
-                    defaultValue={draft?.tag}
+                    defaultValue={draft?.tag
+                    }
                         >
                             <option value="Todo">Todo</option>
                             <option value="Work">Work</option>
@@ -137,4 +138,5 @@ export default function NoteForm() {
                         </button>
                     </div>
                 </form>
-            )}
+    )
+}
